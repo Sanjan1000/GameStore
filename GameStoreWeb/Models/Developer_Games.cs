@@ -4,7 +4,7 @@
     {
         public int GamesId { get; set; }
         public int DeveloperId { get; set; }
-        public Games Games { get; set; }
+        public Game Games { get; set; }
         public Developer Developer { get; set; }
     }
 }

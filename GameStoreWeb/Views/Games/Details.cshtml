@@ -1,0 +1,74 @@
+﻿@model Game
+
+
+@{
+    ViewData["Title"] = "Games details";
+}
+
+<div class="row">
+
+    <div class="col-md-8 offset-2>
+        <div class="card mb-3" style="max-width: 540px;">
+            <div class="row g-0">
+                <div class="col-md-12">
+                    <div class="card-header text-white bg-info">
+                        <p class="card-text">
+                            <h5 class="card-title">
+                            @Model.Name
+                            </h5>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <img src="@Model.ImageURL" width="100%" alt="@Model.Name">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <p class="card-text text-white">@Model.Description</p>
+                        <p class="card-text text-white">
+                            <b>Producer: </b>
+                            <a asp-controller="Producers" asp-action="Details" asp-route-id="@Model.ProducerId">
+                            @Model.Producer.FullName
+                            </a>
+                        </p>
+
+                        <p class="card-text text-white"><b>Category: </b>@Model.GameCategory</p>
+                        <p class="card-text text-white"><b>Start Date: </b>@Model.ReleaseDate.ToString("dd MMM yy")</p>
+                        <p class="card-text  text-white">
+                            <b>Status: </b><span class="badge bg-success text-white">AVAILABLE</span>
+
+                        </p>
+                        <p class="card-text text-white">
+                            <b>Developers: </b>
+                            <hr />
+                            <div class="row">
+                            @foreach (var developer in Model.Developer_Games)
+                            {
+                                    <div class="flex-column text-center">
+                                        <img class="border-info rounded-circle" src="@developer.Developer.ProfilePictureURL" style="max-width: 150px" />
+                                        <br />
+                                        <a asp-controller="Developers" asp-action="Details" asp-route-id="@developer.DeveloperId">@developer.Developer.FullName</a>
+                                    </div>
+                            }
+                            </div>
+                        </p>
+
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="card-footer ">
+                        <p class="card-text text-white">
+                            <a class="btn btn-outline-primary float-right" asp-action="Index" >
+                                Back to List
+                            </a>
+                            <a class="btn btn-success text-white" asp-controller="Orders" asp-action="AddItemToShoppingCart" asp-route-id="@Model.Id">
+                                <i class="bi bi-cart-plus"></i> Add to Cart (Price @Model.Price.ToString("c"))
+                            </a>
+                        </p>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

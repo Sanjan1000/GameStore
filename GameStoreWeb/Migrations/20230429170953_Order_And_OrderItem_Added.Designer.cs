@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GameStoreWeb.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230415022506_Initial")]
-    partial class Initial
+    [Migration("20230429170953_Order_And_OrderItem_Added")]
+    partial class Order_And_OrderItem_Added
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,7 +39,8 @@ namespace GameStoreWeb.Migrations
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("ProfilePictureURL")
                         .IsRequired()
@@ -65,7 +66,7 @@ namespace GameStoreWeb.Migrations
                     b.ToTable("Developer_Games");
                 });
 
-            modelBuilder.Entity("GameStoreWeb.Models.Games", b =>
+            modelBuilder.Entity("GameStoreWeb.Models.Game", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -85,7 +86,6 @@ namespace GameStoreWeb.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Logo")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -106,6 +106,56 @@ namespace GameStoreWeb.Migrations
                     b.HasIndex("ProducerId");
 
                     b.ToTable("Games");
+                });
+
+            modelBuilder.Entity("GameStoreWeb.Models.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("GameStoreWeb.Models.OrderItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GameId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameId");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderItems");
                 });
 
             modelBuilder.Entity("GameStoreWeb.Models.Producer", b =>
@@ -141,7 +191,7 @@ namespace GameStoreWeb.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GameStoreWeb.Models.Games", "Games")
+                    b.HasOne("GameStoreWeb.Models.Game", "Games")
                         .WithMany("Developer_Games")
                         .HasForeignKey("GamesId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -152,7 +202,7 @@ namespace GameStoreWeb.Migrations
                     b.Navigation("Games");
                 });
 
-            modelBuilder.Entity("GameStoreWeb.Models.Games", b =>
+            modelBuilder.Entity("GameStoreWeb.Models.Game", b =>
                 {
                     b.HasOne("GameStoreWeb.Models.Producer", "Producer")
                         .WithMany("Games")
@@ -163,14 +213,38 @@ namespace GameStoreWeb.Migrations
                     b.Navigation("Producer");
                 });
 
+            modelBuilder.Entity("GameStoreWeb.Models.OrderItem", b =>
+                {
+                    b.HasOne("GameStoreWeb.Models.Game", "Game")
+                        .WithMany()
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GameStoreWeb.Models.Order", "Order")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Game");
+
+                    b.Navigation("Order");
+                });
+
             modelBuilder.Entity("GameStoreWeb.Models.Developer", b =>
                 {
                     b.Navigation("Developer_Games");
                 });
 
-            modelBuilder.Entity("GameStoreWeb.Models.Games", b =>
+            modelBuilder.Entity("GameStoreWeb.Models.Game", b =>
                 {
                     b.Navigation("Developer_Games");
+                });
+
+            modelBuilder.Entity("GameStoreWeb.Models.Order", b =>
+                {
+                    b.Navigation("OrderItems");
                 });
 
             modelBuilder.Entity("GameStoreWeb.Models.Producer", b =>

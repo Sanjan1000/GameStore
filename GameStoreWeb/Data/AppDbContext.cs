@@ -1,11 +1,12 @@
 ﻿using GameStoreWeb.Data.Enums;
 using GameStoreWeb.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace GameStoreWeb.Data
 {
-    public class AppDbContext:DbContext
+    public class AppDbContext:IdentityDbContext<ApplicationUser>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -26,8 +27,15 @@ namespace GameStoreWeb.Data
 
         }
         public DbSet<Developer> Developers { get; set; }
-        public DbSet<Games> Games { get; set; }
+        public DbSet<Game> Games { get; set; }
         public DbSet<Producer> Producers { get; set; }
         public DbSet<Developer_Games> Developer_Games { get; set; }
+
+
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem>OrderItems { get; set; }
+
+        public DbSet<ShoppingCartItem> ShoppingCartItems { get; set;}
+
     }
 }

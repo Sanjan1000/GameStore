@@ -6,6 +6,8 @@ using GameStoreWeb.Data.Cart;
 using GameStoreWeb.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using FluentAssertions.Common;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 
 namespace GameStoreWeb
 {
@@ -21,21 +23,20 @@ namespace GameStoreWeb
             builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(
                 builder.Configuration.GetConnectionString("DefaultConnection")
                 ));
-            //Services configuration
-            builder.Services.AddScoped<IDeveloperService, DeveloperService>();
-            builder.Services.AddScoped<IProducersService, ProducersService>();
-            builder.Services.AddScoped<IGamesService, GamesService>();
-            builder.Services.AddScoped<IOrdersService, OrdersService>();
-            builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            builder.Services.AddScoped(sc => ShoppingCart.GetShoppingCart(sc));
-            
-            
             builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
-            //Authentication
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
-            builder.Services.AddMemoryCache();
-            builder.Services.AddSession();
-            builder.Services.AddAuthentication(options =>
+            //Services configuration
+              builder.Services.AddScoped<IDeveloperService, DeveloperService>();
+              builder.Services.AddScoped<IProducersService, ProducersService>();
+        
+              builder.Services.AddScoped<IGamesService, GamesService>();
+              builder.Services.AddScoped<IOrdersService, OrdersService>();
+              builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+              builder.Services.AddScoped(sc => ShoppingCart.GetShoppingCart(sc));
+               //Authentication and authorization
+              builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
+              builder.Services.AddMemoryCache();
+              builder.Services.AddSession();
+              builder.Services.AddAuthentication(options =>
             {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             });
@@ -62,7 +63,7 @@ namespace GameStoreWeb
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseAuthorization();
+            app.UseAuthorization(); 
 
             app.MapControllerRoute(
                 name: "default",

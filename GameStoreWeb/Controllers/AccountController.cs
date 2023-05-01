@@ -34,7 +34,7 @@ namespace GameStoreWeb.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginVM loginVM)
         {
-            if (ModelState.IsValid) return View(loginVM);
+            if (!ModelState.IsValid) return View(loginVM);
 
             var user = await _userManager.FindByEmailAsync(loginVM.EmailAddress);
             if (user != null)
@@ -62,7 +62,7 @@ namespace GameStoreWeb.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterVM registerVM)
         {
-            if (ModelState.IsValid) return View(registerVM);
+            if (!ModelState.IsValid) return View(registerVM);
 
             var user = await _userManager.FindByEmailAsync(registerVM.EmailAddress);
             if (user != null)
@@ -89,7 +89,7 @@ namespace GameStoreWeb.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Games");
+            return RedirectToAction("Index", "Movies");
         }
 
         public IActionResult AccessDenied(string ReturnUrl)

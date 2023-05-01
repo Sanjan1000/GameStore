@@ -16,6 +16,11 @@
                     <th>Order ID</th>
                     <th>Items</th>
                     <th>Total</th>
+                    @if(User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                    {
+                        <th>User</th>
+                    }
+                    
                    
                 </tr>
             </thead>
@@ -36,10 +41,13 @@
                                 }
                             </ul>
                         </td>
-                        <td class="align-middle">
-                            @order.OrderItems.Select(m => m.Game.Price * m.Amount).Sum().ToString("c")
-                        </td>
-                        
+                        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                        {
+                            <td class="align-middle">
+                                @order.OrderItems.Select(m => m.Game.Price * m.Amount).Sum().ToString("c")
+                            </td>
+                        }
+
                     </tr>
                 }
             </tbody>

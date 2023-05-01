@@ -1,4 +1,5 @@
 ﻿using GameStoreWeb.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace GameStoreWeb.Data.Services
@@ -11,17 +12,18 @@ namespace GameStoreWeb.Data.Services
             _context = context;
         }
 
+
         public async Task<List<Order>> GetOrdersByUserIdAndRoleAsync(string userId, string userRole)
         {
+            var orders = await _context.Orders.Include(n => n.OrderItems).ThenInclude(n=>n.Game).Include(n=>n.User).ToListAsync();
 
+            if (userRole != "Admin")
+            {
+                orders = orders.Where(n => n.UserId == userId).ToList();
+            }
 
-        //    if (userRole != "Admin")
-        //    {
-        //        orders = orders.Where(n => n.UserId == userId).ToList();
-        //    }
-
-        //    return orders;
-        //}
+            return orders;
+        }
 
         public async Task StoreOrderAsync(List<ShoppingCartItem> items, string userId, string userEmailAddress)
             {

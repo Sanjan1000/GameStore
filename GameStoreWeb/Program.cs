@@ -17,7 +17,7 @@ namespace GameStoreWeb
 
             // Add services to the container.
 
-            builder.Services.AddControllersWithViews();
+            
             builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(
                 builder.Configuration.GetConnectionString("DefaultConnection")
                 ));
@@ -25,18 +25,22 @@ namespace GameStoreWeb
             builder.Services.AddScoped<IDeveloperService, DeveloperService>();
             builder.Services.AddScoped<IProducersService, ProducersService>();
             builder.Services.AddScoped<IGamesService, GamesService>();
+            builder.Services.AddScoped<IOrdersService, OrdersService>();
             builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             builder.Services.AddScoped(sc => ShoppingCart.GetShoppingCart(sc));
             
-            builder.Services.AddScoped<IOrdersService, OrdersService>();
+            
             builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
             //Authentication
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
             builder.Services.AddMemoryCache();
             builder.Services.AddSession();
-            builder.Services.AddAuthentication(options => {
+            builder.Services.AddAuthentication(options =>
+            {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             });
+
+            builder.Services.AddControllersWithViews();
             var app = builder.Build();
 
 

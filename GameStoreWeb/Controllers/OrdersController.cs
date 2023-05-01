@@ -3,7 +3,7 @@ using GameStoreWeb.Data.Services;
 using GameStoreWeb.Data.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
+using System.Security.Claims;
 
 namespace GameStoreWeb.Controllers
 {
@@ -23,9 +23,11 @@ namespace GameStoreWeb.Controllers
 
         public async Task<IActionResult> Index()
         {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string userRole = User.FindFirstValue(ClaimTypes.Role);
 
-
-            return View();
+            var orders = await _ordersService.GetOrdersByUserIdAndRoleAsync(userId, userRole);
+            return View(orders);
         }
 
         public IActionResult ShoppingCart()
@@ -41,40 +43,39 @@ namespace GameStoreWeb.Controllers
 
             return View(response);
         }
+
+        public async Task<IActionResult> AddItemToShoppingCart(int id)
+        {
+            var item = await _gamesService.GetGameByIdAsync(id);
+
+            if (item != null)
+            {
+                _shoppingCart.AddItemToCart(item);
+            }
+            return RedirectToAction(nameof(ShoppingCart));
+        }
+
+        public async Task<IActionResult> RemoveItemFromShoppingCart(int id)
+        {
+            var item = await _gamesService.GetGameByIdAsync(id);
+
+            if (item != null)
+            {
+                _shoppingCart.RemoveItemFromCart(item);
+            }
+            return RedirectToAction(nameof(ShoppingCart));
+        }
+
+        public async Task<IActionResult> CompleteOrder()
+        {
+            var items = _shoppingCart.GetShoppingCartItems();
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string userEmailAddress = User.FindFirstValue(ClaimTypes.Email);
+
+            await _ordersService.StoreOrderAsync(items, userId, userEmailAddress);
+            await _shoppingCart.ClearShoppingCartAsync();
+
+            return View("OrderCompleted");
+        }
     }
 }
-
-        //public async Task<IActionResult> AddItemToShoppingCart(int id)
-        //{
-        //    //var item = await _gamesService.GetMovieByIdAsync(id);
-
-        //    if (item != null)
-        //    {
-        //        _shoppingCart.AddItemToCart(item);
-        //    }
-        //    return RedirectToAction(nameof(ShoppingCart));
-        //}
-
-        //public async Task<IActionResult> RemoveItemFromShoppingCart(int id)
-        //{
-        //    //var item = await _gamesService.GetMovieByIdAsync(id);
-
-            //if (item != null)
-            //{
-            //    _shoppingCart.RemoveItemFromCart(item);
-            //}
-            //return RedirectToAction(nameof(ShoppingCart));
-        //}
-
-        //public async Task<IActionResult> CompleteOrder()
-        //{
-        //    var items = _shoppingCart.GetShoppingCartItems();
-            
-
-            //await _ordersService.StoreOrderAsync(items, userId, userEmailAddress);
-            //await _shoppingCart.ClearShoppingCartAsync();
-
-            //return View("OrderCompleted");
-//        }
-//    }
-//}
